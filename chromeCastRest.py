@@ -15,24 +15,8 @@ for cc in pychromecast.get_chromecasts():
     mc_dict[cc.device.friendly_name] = cc.media_controller
 print(len(mc_dict), 'Chromecasts found')
 
-
-class ToggleHomeTv(Resource):
-    def get(self):
-        # Get the media controller from the dict
-        mc = mc_dict['My TV']
-
-        # Can't call immediately for some reason, loop until we get response
-        while mc.status.player_state == 'UNKNOWN':
-            continue
-
-        if mc.status.player_state == 'PAUSED':
-            mc.play()
-        elif mc.status.player_state == 'PLAYING':
-            mc.pause()
-        return mc.status.player_state
-
-
 action_set = set(['play', 'pause', 'toggle', 'stop'])
+
 
 class HandleChromecast(Resource):
     def get(self, name, action):
@@ -52,13 +36,15 @@ class HandleChromecast(Resource):
                 playMc(mc)
             elif low_action == STOP_ACTION:
                 stopMc(mc)
-            return 'Ran '+action+' on '+name
+            return 'Ran ' + action + ' on ' + name
         else:
             return 'Action: ' + action + ' not found'
+
 
 def waitUntilKnown(mc):
     while mc.status.player_state == UNKNOWN_STATE:
         continue
+
 
 def toggleMc(mc):
     waitUntilKnown(mc)
@@ -68,13 +54,16 @@ def toggleMc(mc):
         mc.pause()
     return mc.status.player_state
 
+
 def stopMc(mc):
     waitUntilKnown(mc)
     mc.stop()
 
+
 def playMc(mc):
     waitUntilKnown(mc)
     mc.play()
+
 
 def pauseMc(mc):
     waitUntilKnown(mc)

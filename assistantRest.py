@@ -1,6 +1,6 @@
 import pychromecast
 from flask_restful import Resource
-import textinput
+from assistant import textinput
 
 
 class HandleQuery(Resource):

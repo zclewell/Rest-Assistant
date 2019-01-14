@@ -190,14 +190,77 @@ def main(api_endpoint, credentials,
         for query in query_list:
             assistant.assist(text_query=query)
 
+def get_assistant():
+    # logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
+    credentials = os.path.join(click.get_app_dir('google-oauthlib-tool'),
+                                   'credentials.json')
+    # Load OAuth 2.0 credentials.
+    try:
+        with open(credentials, 'r') as f:
+            credentials = google.oauth2.credentials.Credentials(token=None,
+                                                                **json.load(f))
+            http_request = google.auth.transport.requests.Request()
+            credentials.refresh(http_request)
+    except Exception as e:
+        logging.error('Error loading credentials: %s', e)
+        logging.error('Run google-oauthlib-tool to initialize '
+                      'new OAuth 2.0 credentials.')
+        return
+
+    # if input_string:
+    #     print(input_string)
+
+    # Create an authorized gRPC channel.
+    api_endpoint = ASSISTANT_API_ENDPOINT
+    lang = 'en-US'
+    device_model_id = 'dmi'
+    device_id = 'di'
+    display = False
+    grpc_deadline = DEFAULT_GRPC_DEADLINE
+    grpc_channel = google.auth.transport.grpc.secure_authorized_channel(
+        credentials, http_request, api_endpoint)
+
+    assistant = SampleTextAssistant(lang, device_model_id, device_id, display,
+                             grpc_channel, grpc_deadline)
+    return assistant
+
 
 def run_query(query):
-    query_list.append(query)
-    main()
-    query_list.clear()
+    # logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
+    credentials = os.path.join(click.get_app_dir('google-oauthlib-tool'),
+                                   'credentials.json')
+    # Load OAuth 2.0 credentials.
+    try:
+        with open(credentials, 'r') as f:
+            credentials = google.oauth2.credentials.Credentials(token=None,
+                                                                **json.load(f))
+            http_request = google.auth.transport.requests.Request()
+            credentials.refresh(http_request)
+    except Exception as e:
+        logging.error('Error loading credentials: %s', e)
+        logging.error('Run google-oauthlib-tool to initialize '
+                      'new OAuth 2.0 credentials.')
+        return
+
+    # if input_string:
+    #     print(input_string)
+
+    # Create an authorized gRPC channel.
+    api_endpoint = ASSISTANT_API_ENDPOINT
+    lang = 'en-US'
+    device_model_id = 'dmi'
+    device_id = 'di'
+    display = False
+    grpc_deadline = DEFAULT_GRPC_DEADLINE
+    grpc_channel = google.auth.transport.grpc.secure_authorized_channel(
+        credentials, http_request, api_endpoint)
+
+    assistant = SampleTextAssistant(lang, device_model_id, device_id, display,
+                             grpc_channel, grpc_deadline)
+    assistant.assist(text_query=query)
 
 
 if __name__ == '__main__':
-    main()
+    run_query('broadcast test')
 
 

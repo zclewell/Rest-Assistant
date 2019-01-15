@@ -1,4 +1,5 @@
 import pychromecast
+from authenticate import is_valid_key
 from flask import request
 from flask_restful import Resource
 
@@ -21,10 +22,16 @@ action_set = set(['play', 'pause', 'toggle', 'stop'])
 
 class HandleChromecast(Resource):
     def get(self):
+        key = request.form['key']
+        if not is_valid_key(key):
+            return
         json = {'device_ids': list(mc_dict.keys())}
         return json
 
     def post(self):
+        key = request.form['key']
+        if not is_valid_key(key):
+            return
         good_to_run = True
         json = {'errors': []}
         device_id = request.form['device_id']

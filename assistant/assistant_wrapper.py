@@ -14,15 +14,14 @@
 
 """Sample that implements a text client for the Google Assistant Service."""
 
-import os
-import logging
 import json
+import logging
+import os
 
 import click
 import google.auth.transport.grpc
 import google.auth.transport.requests
 import google.oauth2.credentials
-
 from google.assistant.embedded.v1alpha2 import (
     embedded_assistant_pb2,
     embedded_assistant_pb2_grpc

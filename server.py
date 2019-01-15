@@ -1,14 +1,13 @@
-from flask import Flask, request
+from flask import Flask
 from flask_restful import Api
-from chromeCastRest import HandleChromecast
 from assistantRest import HandleQuery
+from chromeCastRest import HandleChromecast
 
 app = Flask(__name__)
 api = Api(app)
 
-api.add_resource(HandleChromecast, '/chromecast/<string:name>/<string:action>')
-api.add_resource(HandleQuery, '/assistant/<string:query>')
-
+api.add_resource(HandleChromecast, '/chromecast')
+api.add_resource(HandleQuery, '/assistant')
 
 if __name__ == '__main__':
     app.run(debug=True)

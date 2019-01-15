@@ -1,4 +1,5 @@
 import pychromecast
+from flask import request
 from flask_restful import Resource
 
 UNKNOWN_STATE = 'UNKNOWN'
@@ -19,35 +20,43 @@ action_set = set(['play', 'pause', 'toggle', 'stop'])
 
 
 class HandleChromecast(Resource):
-    def get(self, name, action):
-        name = name.replace('_', ' ')
-        if name in mc_dict:
-            mc = mc_dict[name]
+    def get(self):
+        json = {'device_ids': list(mc_dict.keys())}
+        return json
+
+    def post(self):
+        good_to_run = True
+        json = {'errors': []}
+        device_id = request.form['device_id']
+        if device_id in mc_dict:
+            mc = mc_dict[device_id]
         else:
-            return 'Name: ' + name + ' not found'
-
-        low_action = action.lower()
-        if low_action in action_set:
-            if low_action == TOGGLE_ACTION:
-                toggleMc(mc)
-            elif low_action == PAUSE_ACTION:
-                pauseMc(mc)
-            elif low_action == PLAY_ACTION:
-                playMc(mc)
-            elif low_action == STOP_ACTION:
-                stopMc(mc)
-            return 'Ran ' + action + ' on ' + name
+            good_to_run = False
+            json['errors'].append('Device Id: ' + device_id + ' not found')
+        action = request.form['action']
+        if action not in action_set:
+            good_to_run = False
+            json['errors'].append('Action: ' + action + ' not found')
+        if good_to_run:
+            if action == TOGGLE_ACTION:
+                toggle_mc(mc)
+            elif action == PLAY_ACTION:
+                play_mc(mc)
+            elif action == PAUSE_ACTION:
+                pause_mc(mc)
+            elif action == STOP_ACTION:
+                stop_mc(mc)
         else:
-            return 'Action: ' + action + ' not found'
+            return json
 
 
-def waitUntilKnown(mc):
+def wait_until_known(mc):
     while mc.status.player_state == UNKNOWN_STATE:
         continue
 
 
-def toggleMc(mc):
-    waitUntilKnown(mc)
+def toggle_mc(mc):
+    wait_until_known(mc)
     if mc.status.player_state == PAUSED_STATE:
         mc.play()
     elif mc.status.player_state == PLAYING_STATE:
@@ -55,16 +64,16 @@ def toggleMc(mc):
     return mc.status.player_state
 
 
-def stopMc(mc):
-    waitUntilKnown(mc)
+def stop_mc(mc):
+    wait_until_known(mc)
     mc.stop()
 
 
-def playMc(mc):
-    waitUntilKnown(mc)
+def play_mc(mc):
+    wait_until_known(mc)
     mc.play()
 
 
-def pauseMc(mc):
-    waitUntilKnown(mc)
+def pause_mc(mc):
+    wait_until_known(mc)
     mc.pause()

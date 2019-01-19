@@ -1,7 +1,10 @@
+import json
+
 import pychromecast
-from authenticate import is_valid_key
 from flask import request
 from flask_restful import Resource
+
+from helper import is_valid_key, CustomLogger
 
 UNKNOWN_STATE = 'UNKNOWN'
 PLAYING_STATE = 'PLAYING'
@@ -12,10 +15,15 @@ PAUSE_ACTION = 'pause'
 PLAY_ACTION = 'play'
 STOP_ACTION = 'stop'
 
+CUSTOM_LOGGER_HEADER = 'Chromecast'
+
+log = CustomLogger(CUSTOM_LOGGER_HEADER).log
+
 mc_dict = {}
 for cc in pychromecast.get_chromecasts():
     mc_dict[cc.device.friendly_name] = cc.media_controller
-print(len(mc_dict), 'Chromecasts found')
+
+log(str.format('{0} chromecasts found', len(mc_dict)))
 
 action_set = set(['play', 'pause', 'toggle', 'stop'])
 
@@ -25,26 +33,22 @@ class HandleChromecast(Resource):
         key = request.form['key']
         if not is_valid_key(key):
             return
-        json = {'device_ids': list(mc_dict.keys())}
-        return json
+        json_out = {'device_ids': list(mc_dict.keys())}
+        return json_out
 
     def post(self):
-        key = request.form['key']
-        if not is_valid_key(key):
+        json_in = json.loads(request.form['data'])
+
+        if not is_valid_key(json_in.get('key', False)):
             return
-        good_to_run = True
-        json = {'errors': []}
-        device_id = request.form['device_id']
-        if device_id in mc_dict:
+
+        device_id = json_in.get('device_id', False)
+        action = json_in.get('action', False)
+        if (action and
+                device_id and
+                action in action_set and
+                device_id in mc_dict):
             mc = mc_dict[device_id]
-        else:
-            good_to_run = False
-            json['errors'].append('Device Id: ' + device_id + ' not found')
-        action = request.form['action']
-        if action not in action_set:
-            good_to_run = False
-            json['errors'].append('Action: ' + action + ' not found')
-        if good_to_run:
             if action == TOGGLE_ACTION:
                 toggle_mc(mc)
             elif action == PLAY_ACTION:
@@ -53,8 +57,6 @@ class HandleChromecast(Resource):
                 pause_mc(mc)
             elif action == STOP_ACTION:
                 stop_mc(mc)
-        else:
-            return json
 
 
 def wait_until_known(mc):
@@ -84,3 +86,7 @@ def play_mc(mc):
 def pause_mc(mc):
     wait_until_known(mc)
     mc.pause()
+
+
+def custom_logger(s):
+    print(str.format('[%s]: %s', CUSTOM_LOGGER_HEADER, s))

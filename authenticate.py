@@ -6,4 +6,4 @@ while line:
     line = secret_f.readline()
 
 def is_valid_key(key):
-    return key in key_set
+    return key and key in key_set

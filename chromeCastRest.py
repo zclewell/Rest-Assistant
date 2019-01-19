@@ -1,10 +1,10 @@
+import json
+
 import pychromecast
-from authenticate import is_valid_key
 from flask import request
 from flask_restful import Resource
-import json
-import os
-import time
+
+from helper import is_valid_key, CustomLogger
 
 UNKNOWN_STATE = 'UNKNOWN'
 PLAYING_STATE = 'PLAYING'
@@ -15,10 +15,15 @@ PAUSE_ACTION = 'pause'
 PLAY_ACTION = 'play'
 STOP_ACTION = 'stop'
 
+CUSTOM_LOGGER_HEADER = 'Chromecast'
+
+log = CustomLogger(CUSTOM_LOGGER_HEADER).log
+
 mc_dict = {}
 for cc in pychromecast.get_chromecasts():
     mc_dict[cc.device.friendly_name] = cc.media_controller
-print(len(mc_dict), 'Chromecasts found')
+
+log(str.format('{0} chromecasts found', len(mc_dict)))
 
 action_set = set(['play', 'pause', 'toggle', 'stop'])
 
@@ -40,9 +45,9 @@ class HandleChromecast(Resource):
         device_id = json_in.get('device_id', False)
         action = json_in.get('action', False)
         if (action and
-            device_id and
-            action in action_set and
-            device_id in mc_dict):
+                device_id and
+                action in action_set and
+                device_id in mc_dict):
             mc = mc_dict[device_id]
             if action == TOGGLE_ACTION:
                 toggle_mc(mc)
@@ -81,3 +86,7 @@ def play_mc(mc):
 def pause_mc(mc):
     wait_until_known(mc)
     mc.pause()
+
+
+def custom_logger(s):
+    print(str.format('[%s]: %s', CUSTOM_LOGGER_HEADER, s))

@@ -6,7 +6,7 @@ while line:
     line = secret_f.readline()
 
 def is_valid_key(key):
-    return (len(key) == 0) or (key and key in key_set)
+    return key and key in key_set
 
 class CustomLogger:
     def __init__(self, s):

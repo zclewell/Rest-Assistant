@@ -11,12 +11,13 @@ assistant = assistant_wrapper.get_assistant()
 
 class HandleQuery(Resource):
     def post(self):
-        json_in = json.loads(request.form['data'])
+        args = request.args
 
-        if not is_valid_key(json_in.get('key', False)):
+        key = args.get('key', False)
+        if not is_valid_key(key):
             return
 
-        query = json_in.get('query', False)
+        query = args.get('query', False)
         if query:
             response = assistant.assist(text_query=query)[0]
             json_out = {'response': response}

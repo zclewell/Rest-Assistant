@@ -1,2 +1,4 @@
 npm
 secret*
+__pycache__
+*.pyc

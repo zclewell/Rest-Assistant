@@ -30,20 +30,22 @@ action_set = set(['play', 'pause', 'toggle', 'stop'])
 
 class HandleChromecast(Resource):
     def get(self):
-        key = request.form['key']
+        args = request.args
+        key = args.get('key', False)
         if not is_valid_key(key):
             return
         json_out = {'device_ids': list(mc_dict.keys())}
         return json_out
 
     def post(self):
-        json_in = json.loads(request.form['data'])
+        args = request.args
 
-        if not is_valid_key(json_in.get('key', False)):
+        key = args.get('key')
+        if not is_valid_key(key):
             return
 
-        device_id = json_in.get('device_id', False)
-        action = json_in.get('action', False)
+        device_id = args.get('device_id',False)
+        action = args.get('action',False)
         if (action and
                 device_id and
                 action in action_set and

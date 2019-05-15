@@ -21,3 +21,26 @@ Setting up the google assistant REST service requires you to authorize the devic
 
 Source: https://www.xda-developers.com/how-to-get-google-assistant-on-your-windows-mac-or-linux-machine/
 
+## Documentation - API
+
+### Chromecast
+
+Param | Required | Type| Description | Example
+---|:---:|:---:|---|---
+key | yes<sup>1</sup>| String | Key defined in 'secret' file used to authenticate request|password
+delay | no | Int | Delay in seconds before command is sent | 30
+device_id | yes | String | Name of Chromecast Device | Bedroom Tv
+command | yes<sup>2</sup> | String | Command sent to chromecast | pause
+
+### Assistant
+
+Param | Required | Type| Description | Example
+---|:---:|:---:|---|---
+key | yes<sup>1</sup>| String | Key defined in 'secret' file used to authenticate request|password
+delay | no | Int | Delay in seconds before command is sent | 30
+request | yes | String | Query sent to google assistant | Turn off the lights
+
+### Notes
+1. If no 'secret' file is in the root of the project authentication is not used and this param becomes optional
+2. Must be one of the following strings: "toggle", "play", "pause", "stop" 
+

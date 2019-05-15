@@ -1,4 +1,5 @@
 import json
+import time
 
 from flask import request
 from flask_restful import Resource
@@ -18,7 +19,10 @@ class HandleQuery(Resource):
             return
 
         query = get_value(args, body, 'query')
+        delay = get_value(args, body, 'delay')
         if query:
+            if delay:
+                time.sleep(int(delay))
             response = assistant.assist(text_query=query)[0]
             json_out = {'response': response}
             return json_out

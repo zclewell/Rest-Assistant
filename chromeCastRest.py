@@ -1,4 +1,5 @@
 import json
+import time
 
 import pychromecast
 from flask import request
@@ -47,10 +48,13 @@ class HandleChromecast(Resource):
 
         device_id = get_value(args, body, 'device_id')
         action = get_value(args, body, 'action')
+        delay = get_value(args, body, 'delay')
         if (action and
                 device_id and
                 action in action_set and
                 device_id in mc_dict):
+            if delay:
+                time.sleep(int(delay))
             mc = mc_dict[device_id]
             if action == TOGGLE_ACTION:
                 toggle_mc(mc)

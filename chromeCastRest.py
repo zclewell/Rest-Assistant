@@ -4,7 +4,7 @@ import pychromecast
 from flask import request
 from flask_restful import Resource
 
-from helper import is_valid_key, CustomLogger
+from helper import is_valid_key, CustomLogger, get_value
 
 UNKNOWN_STATE = 'UNKNOWN'
 PLAYING_STATE = 'PLAYING'
@@ -31,7 +31,8 @@ action_set = set(['play', 'pause', 'toggle', 'stop'])
 class HandleChromecast(Resource):
     def get(self):
         args = request.args
-        key = args.get('key', False)
+        body = request.form
+        key = get_value(args, body, 'key')
         if not is_valid_key(key):
             return
         json_out = {'device_ids': list(mc_dict.keys())}
@@ -39,13 +40,13 @@ class HandleChromecast(Resource):
 
     def post(self):
         args = request.args
-
-        key = args.get('key')
+        body = request.form
+        key = get_value(args, body, 'key')
         if not is_valid_key(key):
             return
 
-        device_id = args.get('device_id',False)
-        action = args.get('action',False)
+        device_id = get_value(args, body, 'device_id')
+        action = get_value(args, body, 'action')
         if (action and
                 device_id and
                 action in action_set and

@@ -14,3 +14,20 @@ class CustomLogger:
 
     def log(self, s):
         print(str.format('[{0}]: {1}', self.s, s))
+
+def get_value(args, body, key, useArgs=True):
+    argVal  = args.get(key, False)
+    bodyVal = body.get(key, False)
+    if argVal and bodyVal:
+        if argVal == bodyVal:
+            return argVal
+        elif useArgs:
+            return argVal
+        else:
+            return bodyVal
+    elif argVal:
+        return argVal
+    elif bodyVal:
+        return bodyVal
+    else:
+        return False

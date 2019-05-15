@@ -5,7 +5,8 @@ import pychromecast
 from flask import request
 from flask_restful import Resource
 
-from helper import is_valid_key, CustomLogger, get_value
+from helper import is_valid_key, get_value
+from logger import CustomLogger
 
 UNKNOWN_STATE = 'UNKNOWN'
 PLAYING_STATE = 'PLAYING'

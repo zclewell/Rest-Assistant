@@ -1,22 +1,30 @@
+from logger import CustomLogger
+
+CUSTOM_LOGGER_HEADER = 'helper'
+
+log = CustomLogger(CUSTOM_LOGGER_HEADER).log
+
 key_set = set()
-secret_f = open('secret')
-line = secret_f.readline()
-while line:
-    key_set.add(line)
+try:
+    secret_f = open('secret')
     line = secret_f.readline()
+    while line:
+        key_set.add(line)
+        line = secret_f.readline()
+except FileNotFoundError:
+    log('no secret file found, all requests will be accepted')
+    key_set = None
+
 
 def is_valid_key(key):
-    return key and key in key_set
+    if key_set:
+        return key and key in key_set
+    else:
+        return True
 
-class CustomLogger:
-    def __init__(self, s):
-        self.s = s
-
-    def log(self, s):
-        print(str.format('[{0}]: {1}', self.s, s))
 
 def get_value(args, body, key, useArgs=True):
-    argVal  = args.get(key, False)
+    argVal = args.get(key, False)
     bodyVal = body.get(key, False)
     if argVal and bodyVal:
         if argVal == bodyVal:

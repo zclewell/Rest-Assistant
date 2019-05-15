@@ -2,9 +2,9 @@
 Creating a custom rest interface for personal use with iOS Shortcuts
 ## Setup
 
-###Security
+### Security
 Create a 'secret' file in the root of this directory. Add your authentication keys separated by newlines. (If no secret files is found the server will listen to all requests)
-###Assistant
+### Assistant
 Setting up the google assistant REST service requires you to authorize the device to access your assistant through your own google account. Follow the steps below to enable this:
 1. Go to the [Projects](https://console.cloud.google.com/project) page in the Google Cloud Platform Console.
 2. Click on “Create Project” up top.
